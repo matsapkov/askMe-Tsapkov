@@ -1,0 +1,14 @@
+.custom_input {
+    height: 400px;
+    resize: vertical;
+    overflow-y: auto;
+}
+.button_container {
+    margin-left: 165px;
+}
+.custom-button {
+    padding-left: 165px;
+}
+
+  
+  

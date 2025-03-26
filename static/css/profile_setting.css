@@ -1,0 +1,23 @@
+input.form-control {
+    width: 300px;   /* Поля ввода будут занимать всю доступную ширину */
+}
+/* Контейнер для аватара (квадратный размер) */
+.avatar-container {
+    width: 100px;
+    height: 100px;
+    overflow: hidden; /* Обрезает изображение, если оно выходит за пределы контейнера */
+    border: 2px solid #ccc; /* Окружность для контраста */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Изображение в контейнере */
+  .avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Изображение будет масштабироваться и заполнять контейнер */
+  }
+  
+  
+  

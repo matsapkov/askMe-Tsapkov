@@ -1,0 +1,37 @@
+.account {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 12px;
+}
+
+.profile-pic{
+    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    max-width: 38px;
+    max-height: 38px;
+}
+.img-fit {
+    width: 100%;  
+    height: 100%; 
+    object-fit: cover; /* Обрезает изображение, чтобы заполнить контейнер */
+    display: block; /* Убирает возможные лишние отступы */
+    max-width: 100%; /* Гарантирует, что не будет выхода за границы */
+    max-height: 100%; /* Гарантирует, что не будет выхода за границы */
+}
+.custom-hr {
+    border: none;    
+    height: 2px;     
+    background-color: black; 
+    margin: 20px 0; 
+}
+.custom_input {
+    height: 300px;
+}
+.answer-text {
+    margin: 0;
+}
+.button_container {
+    margin-top: 20px;
+}
