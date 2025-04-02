@@ -18,6 +18,19 @@ input.form-control {
     height: 100%;
     object-fit: cover; /* Изображение будет масштабироваться и заполнять контейнер */
   }
-  
-  
+
+  .account {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Отступ между картинкой и кнопкой */
+    padding-right: 12px;
+}
+
+.profile-pic{
+    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    max-width: 38px;
+    max-height: 38px;
+}
   

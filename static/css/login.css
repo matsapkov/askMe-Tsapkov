@@ -1,7 +1,7 @@
 .account {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 10px; /* Отступ между картинкой и кнопкой */
     padding-right: 12px;
 }
 
@@ -20,19 +20,18 @@
     max-width: 100%; /* Гарантирует, что не будет выхода за границы */
     max-height: 100%; /* Гарантирует, что не будет выхода за границы */
 }
-.custom-hr {
-    border: none;    
-    height: 2px;     
-    background-color: black; 
-    margin: 20px 0; 
-}
-.custom_input {
-    height: 300px;
-}
-.answer-text {
-    margin: 0;
-}
-.button_container {
-    margin-top: 20px;
-}
 
+
+
+input.form-control {
+    width: 300px;  
+}
+.btn-primary {
+    margin-left: 165px;
+}
+.text-danger{
+    margin-left: 165px;
+}
+.create_account_link {
+    margin-left: 165px;
+}
