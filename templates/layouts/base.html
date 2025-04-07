@@ -1,0 +1,84 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AskMe</title>
+      {% block css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+  </head>
+  <body>
+  <script src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="{% url 'index' %}">AskMe</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-flex align-items-center" id="navbarSupportedContent">
+              <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success me-2 " type="submit">Ask</button>
+              </form>
+              <a href="{% url 'ask' %}" class="btn btn-outline-primary">New Question</a>
+            </div>
+        </div>
+        <div class="account d-flex">
+            <a href="{% url 'login' %}" class="btn btn-outline-success ms-auto">Login</a>
+        </div>
+        <div class="account">
+            <div class="account_image">
+                <img src="{% static 'img/guest_user(2).jpg' %}" class="profile-pic" alt="...">
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Mikhail
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Log Out</a></li>
+                  <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
+                </ul>
+            </div>
+        </div>
+      </nav>
+      <main class="container mt-2">
+        <div class="row">
+            <section class="col vh-100">
+               {% block content %}{% endblock %}
+            </section>
+            <aside class="col-3">
+                <section class="mb-3">
+                    <h3>Popular tags</h3>
+                    <div>
+                        {% for tag in tags %}
+                            <a href="{% url 'tag' tag.id %}" class="badge rounded-pill text-bg-primary text-decoration-none">{{ tag.name }}</a>
+                        {% endfor %}
+{#                        <a href="{% url 'tag' 1 %}" class="badge rounded-pill text-bg-primary text-decoration-none">Primary</a>#}
+{#                        <a href="{% url 'tag' 2 %}" class="badge rounded-pill text-bg-secondary text-decoration-none">Secondary</a>#}
+{#                        <a href="{% url 'tag' 3 %}" class="badge rounded-pill text-bg-success text-decoration-none">Success</a>#}
+{#                        <a href="{% url 'tag' 4 %}" class="badge rounded-pill text-bg-danger text-decoration-none">Danger</a>#}
+{#                        <a href="{% url 'tag' tag.id %}" class="badge rounded-pill text-bg-warning text-decoration-none">Warning</a>#}
+{#                        <a href="{% url 'tag' tag.id %}" class="badge rounded-pill text-bg-info text-decoration-none">Info</a>#}
+{#                        <a href="{% url 'tag' tag.id %}" class="badge rounded-pill text-bg-light text-decoration-none">Light</a>#}
+{#                        <a href="{% url 'tag' tag.id %}" class="badge rounded-pill text-bg-dark text-decoration-none">Dark</a>#}
+                    </div>
+                </section>
+                <section>
+                    <h3>Best members</h3>
+                    <div>
+                        <a class="d-block" href="#">Member</a>
+                        <a class="d-block" href="#">Member</a>
+                        <a class="d-block" href="#">Member</a>
+                        <a class="d-block" href="#">Member</a>
+                        <a class="d-block" href="#">Member</a>
+                        <a class="d-block" href="#">Member</a>
+                        <a class="d-block" href="#">Member</a>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </main>
+  </body>
+</html>

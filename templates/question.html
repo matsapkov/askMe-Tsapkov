@@ -1,0 +1,27 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/question.css' %}">
+{% endblock %}
+{% block content %}
+                {% include 'layouts/question_item.html' %}
+                <hr class="custom-hr">
+                <articles class="d-flex gap-3 flex-column">
+                    {% for answer in answers %}
+                        {% include 'layouts/answer_item.html' %}
+                    {% endfor %}
+                    {% include 'layouts/pagination.html' %}
+                </articles>
+
+                <hr class="custom-hr">
+                <p class="answer-text">Answer here!</p>
+                <div>
+                    <label for="inputText"></label>
+                    <div class="textarea">
+                      <textarea class="form-control custom_input" id="inputText"></textarea>
+                    </div>
+                    <div class="button_container">
+                        <button class="custom_button" type="submit">Answer</button>
+                    </div>
+                </div>
+{% endblock %}
