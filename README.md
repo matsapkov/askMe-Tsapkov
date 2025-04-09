@@ -19,7 +19,8 @@
       cd путь/до/репозитория
 2. Перейдите в директорию *app* и создайте папку *fixtures*
     ```cmd
-      cd путь/до/репозитория
+      cd app
+      mkdir fixtures 
 3. Скопируйте загруженный JSON-файл в эту папку и выполните команду:
     ```cmd
       python manage.py loaddata app/fixtures/fixtures.json
