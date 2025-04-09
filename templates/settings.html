@@ -29,7 +29,8 @@
         <label for="currentAvatar" class="col-sm-2 col-form-label">Current Avatar</label>
         <div class="col-sm-10">
             <div class="avatar-container">
-                <img id="currentAvatar" src="{% static 'img/guest_user.jpg' %}" alt="Current Avatar">
+                 <img id="currentAvatar" src="{% if user.image %}{{ user.image.url }}{% else %}{% static 'default_profile_pics/guest_user.jpg' %}{% endif %}"
+                             alt="Current Avatar">
             </div>
         </div>
     </div>

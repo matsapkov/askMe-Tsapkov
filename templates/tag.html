@@ -5,12 +5,12 @@
 {% endblock %}
 {% block content %}
     <div class="d-flex align-items-center gap-2 mb-4">
-        <h1>Tag: {{ tag.name }}</h1>
+        <h1>Tag: {{ tag_name }}</h1>
     </div>
     <articles class="d-flex gap-3 flex-column">
-        {% for question in questions %}
+{#        {% for question in questions %}#}
             {% include 'layouts/question_item.html' %}
-        {% endfor %}
+{#        {% endfor %}#}
         {% include 'layouts/pagination.html' %}
     </articles>
 {% endblock %}

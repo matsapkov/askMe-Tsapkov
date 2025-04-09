@@ -1,4 +1,10 @@
-venv
-.idea
+venv/
+.idea/
+.env/
+.DS_Store/
 .env
-
+.venv
+env/
+ENV/
+env.bak/
+venv.bak/
