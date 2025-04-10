@@ -9,7 +9,7 @@ class QuestionManager(models.Manager):
     def get_hot_questions(self):
         return self.order_by('-likes')
 
-    def get_questions_by_tag(self, tag_name):
+    def  get_questions_by_tag(self, tag_name):
         return self.filter(tags__name=tag_name)
 
 
