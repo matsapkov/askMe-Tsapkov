@@ -1,25 +1,17 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
+{% load bootstrap5 %}
 {% block css %}{% endblock %}
 {% block content %}
     <div class="d-flex align-items-center gap-2 mb-4">
         <h1>Login</h1>
     </div>
-    <div class="text-danger mb-3">Логин или пароль неверный!</div>
-        <form>
-            <div class="row mb-3">
-                <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
-                <div class="col-sm-10">
-                    <input type="email" class="form-control" id="inputEmail3">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
-                <div class="col-sm-10">
-                    <input type="password" class="form-control" id="inputPassword3">
-                </div>
-            </div>
-            <button type="submit" class="btn-primary mb-2">Sign in</button>
+        <form action="" method="POST">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+                <button type="submit" class="btn-primary mb-2">Sign in</button>
+            {% endbuttons %}
         </form>
     <a href="{% url 'register' %}" class="create_account_link">Нет аккаунта? Зарегистрируйся здесь!</a>
 {% endblock %}

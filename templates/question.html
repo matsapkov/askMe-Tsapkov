@@ -1,5 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
+{% load bootstrap5 %}
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/question.css' %}">
 {% endblock %}
@@ -12,16 +13,15 @@
                     {% endfor %}
                     {% include 'layouts/pagination.html' %}
                 </articles>
-
                 <hr class="custom-hr">
                 <p class="answer-text">Answer here!</p>
+                <form action="" method="post">
                 <div>
-                    <label for="inputText"></label>
-                    <div class="textarea">
-                      <textarea class="form-control custom_input" id="inputText"></textarea>
-                    </div>
-                    <div class="button_container">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
                         <button class="custom_button" type="submit">Answer</button>
-                    </div>
+                    {% endbuttons %}
                 </div>
+                </form>
 {% endblock %}
