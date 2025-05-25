@@ -167,6 +167,7 @@ def tag(request, tag_name):
 
     return render(request, 'tag.html', context=context)
 
+
 @login_required(login_url=reverse_lazy('login'))
 def ask(request):
     if request.method == 'POST':

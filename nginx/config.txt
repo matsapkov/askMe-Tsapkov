@@ -1,0 +1,44 @@
+worker_processes 1;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include mime.types;
+    default_type application/octet-stream;
+
+    gzip on;
+    gzip_types text/css application/javascript image/jpeg image/png;
+
+    proxy_cache_path /opt/homebrew/var/nginx/cache levels=1:2 keys_zone=custom_cache:10m max_size=100m inactive=1h use_temp_path=off;
+
+    upstream askme_project {
+        server 127.0.0.1:8001;
+    }
+
+    server {
+        listen 8080;
+        server_name localhost;
+
+        location /static/ {
+            root /Users/mikhailtsapkov/Desktop/TP/WebTP-Project/askme-tsapkov;
+            add_header Cache-Control "public, max-age=3600";
+            try_files $uri =404;
+        }
+
+        location /uploads/ {
+            root /Users/mikhailtsapkov/Desktop/TP/WebTP-Project/askme-tsapkov;
+            add_header Cache-Control "public, max-age=3600";
+            try_files $uri =404;
+        }
+
+        location / {
+            proxy_pass http://askme_project;
+            proxy_set_header Host $host;
+            proxy_cache custom_cache;
+            proxy_cache_valid 200 302 10m;
+            proxy_cache_valid 404 1m;
+        }
+    }
+}
