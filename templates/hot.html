@@ -9,8 +9,8 @@
                     <a href="{% url 'index' %}">New Questions</a>
                 </div>
                 <article class="d-flex gap-3 flex-column">
-                    {% for question in questions %}
-                       {% include 'layouts/question_item.html' %}
+                    {% for item in questions %}
+                       {% include 'layouts/question_item.html' with question=item.obj item=item %}
                     {% endfor %}
                     {% include 'layouts/pagination.html' %}
                 </article>

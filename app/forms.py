@@ -1,8 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-
 from app import models
-from app.models import Answer, Question
+from app.models import Answer, Question, Profile
 
 
 class LoginForm(forms.Form):
@@ -117,6 +116,23 @@ class AskQuestion(forms.ModelForm):
         return list(names)
 
 
+class SettingsForm(forms.ModelForm):
+    username = forms.CharField(label='Login', disabled=True, required=False)
+    email    = forms.EmailField(label='Email', disabled=True, required=False)
+    avatar   = forms.ImageField(label='New Avatar', required=False)
+
+    class Meta:
+        model = Profile
+        fields = ['username', 'email', 'avatar']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({
+            'placeholder': self.instance.user.username,
+        })
+        self.fields['email'].widget.attrs.update({
+            'placeholder': self.instance.user.email,
+        })
 
 
 

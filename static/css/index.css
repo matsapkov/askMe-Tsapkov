@@ -1,24 +1,22 @@
 .account {
     display: flex;
     align-items: center;
-    gap: 10px; /* Отступ между картинкой и кнопкой */
+    gap: 10px;
     padding-right: 12px;
 }
-
-.profile-pic{
+.account_image {
+    width: 38px;
+    height: 38px;
+    overflow: hidden;
+    border-radius: var(--bs-border-radius);
+    flex-shrink: 0;
+}
+.profile-pic,
+.img-fit {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
     background-color: var(--bs-body-bg);
     border: var(--bs-border-width) solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
-    max-width: 38px;
-    max-height: 38px;
 }
-.img-fit {
-    width: 100%;  
-    height: 100%; 
-    object-fit: cover; /* Обрезает изображение, чтобы заполнить контейнер */
-    display: block; /* Убирает возможные лишние отступы */
-    max-width: 100%; /* Гарантирует, что не будет выхода за границы */
-    max-height: 100%; /* Гарантирует, что не будет выхода за границы */
-}
-
-

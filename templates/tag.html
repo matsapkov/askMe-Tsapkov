@@ -8,9 +8,9 @@
         <h1>Tag: {{ tag_name }}</h1>
     </div>
     <articles class="d-flex gap-3 flex-column">
-{#        {% for question in questions %}#}
-            {% include 'layouts/question_item.html' %}
-{#        {% endfor %}#}
+        {% for item in questions %}
+            {% include 'layouts/question_item.html' with question=item.obj item=item %}
+        {% endfor %}
         {% include 'layouts/pagination.html' %}
     </articles>
 {% endblock %}
