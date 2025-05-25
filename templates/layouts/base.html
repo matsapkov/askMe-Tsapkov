@@ -20,18 +20,15 @@
             <div class="collapse navbar-collapse d-flex align-items-center" id="navbarSupportedContent">
               <form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success me-2 " type="submit">Ask</button>
+{#                <button class="btn btn-outline-success me-2 " type="submit">Ask</button>#}
               </form>
               <a href="{% url 'ask' %}" class="btn btn-outline-primary">New Question</a>
             </div>
         </div>
-{#        <div class="account d-flex">#}
-{#            <a href="{% url 'login' %}" class="btn btn-outline-success ms-auto">Login</a>#}
-{#        </div>#}
         {% if user.is_authenticated %}
         <div class="account">
                 <div class="account_image">
-                    <img src="{% if user.image %}{{ user.image.url }}{% else %}{% static 'default_profile_pics/guest_user(2).jpg' %}{% endif %}"
+                    <img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'default_profile_pics/guest_user(2).jpg' %}{% endif %}"
                                  alt="Аватар" class="profile-pic">
                 </div>
                 <div class="dropdown">
@@ -75,5 +72,6 @@
             </aside>
         </div>
     </main>
+    <script src="{% static 'js/like_async.js' %}"></script>
   </body>
 </html>

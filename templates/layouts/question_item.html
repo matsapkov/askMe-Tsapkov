@@ -1,14 +1,10 @@
 {% load static %}
-
 <div class="card-body">
     <div class="row">
         <div class="col-2">
             <div class="border mb-2 w-100" style="height: 100px; overflow: hidden;">
-                <img src="{% if user.image %}{{ user.image.url }}{% else %}{% static 'default_profile_pics/guest_user.jpg' %}{% endif %}"
+                <img src="{% if question.author.avatar %}{{ question.author.avatar.url }}{% else %}{% static 'default_profile_pics/guest_user.jpg' %}{% endif %}"
                              alt="Аватар" class="img-fluid img-fit">
-            </div>
-            <div>
-{#                <input type="number" class="form-control" value="5">#}
             </div>
         </div>
         <div class="col d-flex flex-column justify-content-between">
@@ -20,8 +16,13 @@
                 <div>
                     <a href="{% url 'question' question.id %}">Answers ({{ question.amount_of_answers }})</a>
                 </div>
-                <button class="like-button btn btn-outline-secondary" type="button">
-                    ❤️ <span class="like-counter">{{ question.likes }}</span>
+                <button class="like-button btn {% if item.is_liked %}btn-danger{% else %}btn-outline-secondary{% endif %}" type="button" data-question-id="{{ question.id }}">
+                      <span class="heart">
+                        {% if item.is_liked %}❤{% else %}🤍{% endif %}
+                      </span>
+                      <span class="like-counter" data-like-counter="{{ question.id }}">
+                        {{ item.likes_count }}
+                      </span>
                 </button>
                 <div>
                     <span>Tags:</span>

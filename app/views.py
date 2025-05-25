@@ -1,12 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import Http404
+from django.db.models import Count
+from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
+from django.views.decorators.http import require_POST
 from app import models
 from django.contrib import auth
-from app.forms import LoginForm, SignupForm, AnswerForm, AskQuestion
-from app.models import Tag, Question, Answer, Profile
+from app.forms import LoginForm, SignupForm, AnswerForm, AskQuestion, SettingsForm
+from app.models import Tag, Question, Answer, Profile, QuestionLike, AnswerLike
 
 
 # Create your views here.
@@ -21,22 +23,59 @@ def paginate(object_list, request, per_page=5):
     return paginator.page(page)
 
 def index(request):
-    questions = paginate(models.Question.objects.get_new_questions(), request)
-    context = {
-        'questions': questions,
-        'page_obj': questions,
-        'tags': models.Tag.objects.get_popular_tags(),
-        'profiles': models.Profile.objects.get_popular_profiles(),
-    }
+    qs = models.Question.objects.get_new_questions()
+    page = paginate(qs, request)
+    questions_data = []
+    for q in page:
+        cnt = QuestionLike.objects.filter(question=q, like=True).count()
+        me = False
+        if request.user.is_authenticated:
+            profile = request.user.profile
+            me = QuestionLike.objects.filter(
+                question=q,
+                author=profile,
+                like=True
+            ).exists()
 
-    return render(request, 'index.html', context=context)
+        questions_data.append({
+            'obj': q,
+            'likes_count': cnt,
+            'is_liked': me,
+        })
+
+    context = {
+        'questions':       questions_data,
+        'page_obj':        page,
+        'tags':            Tag.objects.get_popular_tags(),
+        'profiles':        Profile.objects.get_popular_profiles(),
+    }
+    return render(request, 'index.html', context)
 
 
 def hot(request):
-    questions = paginate(models.Question.objects.get_hot_questions(), request)
+    page = paginate(models.Question.objects.get_hot_questions(), request)
+
+    questions_data = []
+    for q in page:
+        cnt = models.QuestionLike.objects.filter(question=q, like=True).count()
+
+        liked = False
+        if request.user.is_authenticated:
+            liked = models.QuestionLike.objects.filter(
+                question=q,
+                author=request.user.profile,
+                like=True
+            ).exists()
+
+        questions_data.append({
+            'obj': q,
+            'likes_count': cnt,
+            'is_liked': liked,
+        })
+
     context = {
-        'questions': questions,
-        'page_obj': questions,
+        'questions': questions_data,
+        'page_obj': page,
         'tags': models.Tag.objects.get_popular_tags(),
         'profiles': models.Profile.objects.get_popular_profiles(),
     }
@@ -45,21 +84,50 @@ def hot(request):
 
 def question(request, question_id):
     answers = paginate(models.Answer.objects.get_answers(question_id), request)
-    question = get_object_or_404(models.Question, id=question_id)
+    q = get_object_or_404(models.Question, id=question_id)
+
+    likes_count = models.QuestionLike.objects.filter(question=q, like=True).count()
+    is_liked = False
+    if request.user.is_authenticated:
+        is_liked = models.QuestionLike.objects.filter(
+            question=q,
+            author=request.user.profile,
+            like=True
+        ).exists()
+
+    answer_items = []
+    for a in answers:
+        liked = False
+        if request.user.is_authenticated:
+            liked = models.AnswerLike.objects.filter(answer=a, author=request.user.profile, like=True).exists()
+
+        answer_items.append({
+            'obj': a,
+            'likes_count': models.AnswerLike.objects.filter(answer=a, like=True).count(),
+            'is_liked': liked
+        })
+
     if request.method == 'POST':
         form = AnswerForm(request.POST)
         if form.is_valid():
             answer = form.save(commit=False)
-            answer.question = question
+            answer.question = q
+            answer.author = request.user.profile
             answer.save()
-            question.amount_of_answers += 1
-            question.save(update_fields=['amount_of_answers'])
-            return redirect('question', question_id=question.id)
+            q.amount_of_answers += 1
+            q.save(update_fields=['amount_of_answers'])
+            return redirect('question', question_id=q.id)
     else:
         form = AnswerForm()
+
     context = {
-        'question': question,
-        'answers': answers,
+        'question': q,
+        'question_item': {
+            'obj': q,
+            'likes_count': likes_count,
+            'is_liked': is_liked,
+        },
+        'answers': answer_items,
         'tags': models.Tag.objects.get_popular_tags(),
         'page_obj': answers,
         'profiles': models.Profile.objects.get_popular_profiles(),
@@ -69,14 +137,34 @@ def question(request, question_id):
 
 
 def tag(request, tag_name):
-    questions = paginate(models.Question.objects.get_questions_by_tag(tag_name), request)
+    page = paginate(models.Question.objects.get_questions_by_tag(tag_name), request)
+
+    questions_data = []
+    for q in page:
+        cnt = models.QuestionLike.objects.filter(question=q, like=True).count()
+
+        liked = False
+        if request.user.is_authenticated:
+            liked = models.QuestionLike.objects.filter(
+                question=q,
+                author=request.user.profile,
+                like=True
+            ).exists()
+
+        questions_data.append({
+            'obj': q,
+            'likes_count': cnt,
+            'is_liked': liked,
+        })
+
     context = {
         'tag_name': tag_name,
-        'questions': questions,
-        'page_obj': questions,
+        'questions': questions_data,
+        'page_obj': page,
         'tags': models.Tag.objects.get_popular_tags(),
         'profiles': models.Profile.objects.get_popular_profiles(),
     }
+
     return render(request, 'tag.html', context=context)
 
 @login_required(login_url=reverse_lazy('login'))
@@ -149,10 +237,70 @@ def logout(request):
     return redirect(reverse('login'))
 
 
-
 def settings(request):
+    profile = Profile.objects.get(user=request.user)
+    if request.method == 'POST':
+        form = SettingsForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('settings'))
+    else:
+        form = SettingsForm(instance=profile)
+
     context = {
         'tags': models.Tag.objects.get_popular_tags(),
         'profiles': models.Profile.objects.get_popular_profiles(),
+        'form': form,
     }
     return render(request, 'settings.html', context=context)
+
+@require_POST
+@login_required(login_url=reverse_lazy('login'))
+def like_async(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    profile = request.user.profile
+
+    ql, created = QuestionLike.objects.get_or_create(
+        question=question,
+        author=profile,
+        defaults={'like': True}
+    )
+    if not created:
+        ql.like = not ql.like
+        ql.save()
+
+    # простейший подсчёт лайков
+    likes_count = QuestionLike.objects.filter(
+        question=question,
+        like=True
+    ).count()
+
+    return JsonResponse({
+        'liked': ql.like,
+        'likes_count': likes_count,
+    })
+
+
+@require_POST
+@login_required(login_url=reverse_lazy('login'))
+def answer_like_async(request, answer_id):
+    answer = get_object_or_404(Answer, pk=answer_id)
+    profile = request.user.profile
+
+    like_obj, created = AnswerLike.objects.get_or_create(
+        answer=answer,
+        author=profile,
+        defaults={'like': True}
+    )
+
+    if not created:
+        like_obj.like = not like_obj.like
+        like_obj.save(update_fields=['like'])
+
+    likes_count = AnswerLike.objects.filter(answer=answer, like=True).count()
+
+    return JsonResponse({
+        'liked': like_obj.like,
+        'likes_count': likes_count,
+    })
+
