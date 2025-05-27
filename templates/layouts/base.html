@@ -53,22 +53,10 @@
                {% block content %}{% endblock %}
             </section>
             <aside class="col-3">
-                <section class="mb-3">
-                    <h3>Popular tags</h3>
-                    <div>
-                        {% for tag in tags %}
-                            <a href="{% url 'tag' tag.name %}" class="badge rounded-pill text-bg-primary text-decoration-none">{{ tag.name }}</a>
-                        {% endfor %}
-                    </div>
-                </section>
-                <section>
-                    <h3>Best members</h3>
-                    <div>
-                        {% for profile in profiles %}
-                            <a href="#" class="badge rounded-pill text-bg-primary text-decoration-none">{{ profile.user.username }}</a>
-                        {% endfor %}
-                    </div>
-                </section>
+                {% load sidebar_tags %}
+                {% popular_tags %}
+                {% best_users %}
+
             </aside>
         </div>
     </main>

@@ -9,9 +9,26 @@ from app import models
 from django.contrib import auth
 from app.forms import LoginForm, SignupForm, AnswerForm, AskQuestion, SettingsForm
 from app.models import Tag, Question, Answer, Profile, QuestionLike, AnswerLike
+import jwt
+import time
+import json
+from cent import Client, PublishRequest
 
+from django.conf import settings
 
-# Create your views here.
+client = Client(settings.CENTRIFUGO_API_URL, settings.CENTRIFUGO_API_KEY)
+
+def get_centrifugo_data(user_id, channel):
+    ws_url = settings.CENTRIFUGO_WS_URL
+    secret = settings.CENTRIFUGO_SECRET
+    token = jwt.encode({"sub": str(user_id), "exp": int(time.time()) + 600}, secret, algorithm='HS256')
+    return {
+        'centrifugo': {
+            'token': token,
+            'url': ws_url,
+            'channel': channel
+        }
+    }
 
 def paginate(object_list, request, per_page=5):
     paginator = Paginator(object_list, per_page)
@@ -109,6 +126,8 @@ def question(request, question_id):
 
     if request.method == 'POST':
         form = AnswerForm(request.POST)
+        from django.template.loader import render_to_string
+
         if form.is_valid():
             answer = form.save(commit=False)
             answer.question = q
@@ -116,7 +135,25 @@ def question(request, question_id):
             answer.save()
             q.amount_of_answers += 1
             q.save(update_fields=['amount_of_answers'])
+
+            rendered_html = render_to_string('layouts/answer_item.html', {
+                'answer': answer,
+                'item': {
+                    'likes_count': 0,
+                    'is_liked': False,
+                }
+            }, request=request)
+
+            client.publish(PublishRequest(
+                channel=f"question_{q.id}",
+                data={
+                    "html": rendered_html
+                }
+            ))
+
             return redirect('question', question_id=q.id)
+
+
     else:
         form = AnswerForm()
 
@@ -133,7 +170,17 @@ def question(request, question_id):
         'profiles': models.Profile.objects.get_popular_profiles(),
         'form': form,
     }
+
+    if request.user.is_authenticated:
+        centrifugo_data = get_centrifugo_data(
+            user_id=request.user.id,
+            channel=f"question_{question_id}"
+        )
+        context["centrifugo"] = centrifugo_data["centrifugo"]
+        context["is_author"] = request.user.profile == q.author
+
     return render(request, 'question.html', context=context)
+
 
 
 def tag(request, tag_name):
@@ -238,7 +285,7 @@ def logout(request):
     return redirect(reverse('login'))
 
 
-def settings(request):
+def settings_(request):
     profile = Profile.objects.get(user=request.user)
     if request.method == 'POST':
         form = SettingsForm(request.POST, request.FILES, instance=profile)

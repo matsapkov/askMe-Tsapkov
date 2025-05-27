@@ -1,0 +1,8 @@
+<h3>Best members</h3>
+<div>
+    {% for profile in profiles %}
+        <a href="#" class="badge rounded-pill text-bg-primary text-decoration-none">{{ profile.user.username }}</a>
+    {% empty %}
+        <span>No cached users</span>
+    {% endfor %}
+</div>

@@ -1,28 +1,65 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 {% load bootstrap5 %}
+
 {% block css %}
-    <link rel="stylesheet" href="{% static 'css/question.css' %}">
+<link rel="stylesheet" href="{% static 'css/question.css' %}">
 {% endblock %}
+
 {% block content %}
-                {% include 'layouts/question_item.html' with question=question_item.obj item=question_item %}
-                <hr class="custom-hr">
-                <articles class="d-flex gap-3 flex-column">
-                    {% for item in answers %}
-                        {% include 'layouts/answer_item.html' with answer=item.obj item=item %}
-                    {% endfor %}
-                    {% include 'layouts/pagination.html' %}
-                </articles>
-                <hr class="custom-hr">
-                <p class="answer-text">Answer here!</p>
-                <form action="" method="post">
-                <div>
-                    {% csrf_token %}
-                    {% bootstrap_form form %}
-                    {% buttons %}
-                        <button class="custom_button" type="submit">Answer</button>
-                    {% endbuttons %}
-                </div>
-                </form>
+
+{% include 'layouts/question_item.html' with question=question_item.obj item=question_item %}
+
+<hr class="custom-hr">
+
+    <articles class="d-flex gap-3 flex-column">
+        <div id="answers-container">
+            {% for item in answers %}
+                {% include 'layouts/answer_item.html' with answer=item.obj item=item %}
+            {% endfor %}
+        </div>
+        {% include 'layouts/pagination.html' %}
+    </articles>
+    <script src="https://unpkg.com/centrifuge@5.0.1/dist/centrifuge.js"></script>
+    <script type="text/javascript">
+        const centrifuge = new Centrifuge("{{ centrifugo.url }}", {
+            token: "{{ centrifugo.token }}"
+        });
+    
+        centrifuge.on('connecting', function (ctx) {
+            console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
+        }).on('connected', function (ctx) {
+            console.log(`connected over ${ctx.transport}`);
+        }).on('disconnected', function (ctx) {
+            console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
+        }).connect();
+    
+        const sub = centrifuge.newSubscription("{{ centrifugo.channel }}");
+    
+        const isAuthor = {{ is_author|yesno:"true,false" }};
+    
+         sub.on('publication', function (ctx) {
+            const html = ctx.data.html;
+            const container = document.getElementById("answers-container");
+            container.insertAdjacentHTML("afterbegin", html);
+        });
+    
+        sub.subscribe();
+    </script>
+    
+    <hr class="custom-hr">
+        
+    <p class="answer-text">Answer here!</p>
+    <form action="" method="post">
+        <div>
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+            <button class="custom_button" type="submit">Answer</button>
+            {% endbuttons %}
+        </div>
+    </form>
+    
     <script src="{% static 'js/answer_like_async.js' %}"></script>
+
 {% endblock %}

@@ -13,25 +13,25 @@ function getCookie(name) {
 
 const csrftoken = getCookie('csrftoken');
 
-document.querySelectorAll('input.correct-checkbox[data-answer-id]').forEach(cb => {
-    cb.addEventListener('change', async () => {
-        const aid = cb.dataset.answerId;
-        const url = `/answer/${aid}/answer_like_async/`;
+document.getElementById('answers-container').addEventListener('change', async function (e) {
+    if (!e.target.matches('input.correct-checkbox[data-answer-id]')) return;
 
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            credentials: 'same-origin'
-        });
+    const cb = e.target;
+    const aid = cb.dataset.answerId;
+    const url = `/answer/${aid}/answer_like_async/`;
 
-        const data = await res.json();
-        const counter = document.querySelector(`[data-correct-counter="${aid}"]`);
-        if (counter) {
-            counter.innerText = data.likes_count;
-        }
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
     });
-});
 
+    const data = await res.json();
+    const counter = document.querySelector(`[data-correct-counter="${aid}"]`);
+    if (counter) {
+        counter.innerText = data.likes_count;
+    }
+});

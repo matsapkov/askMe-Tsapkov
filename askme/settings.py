@@ -144,3 +144,19 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CENTRIFUGO_SECRET = "secret"
+CENTRIFUGO_API_KEY = "secret"
+CENTRIFUGO_API_URL = "http://localhost:8010/api"
+CENTRIFUGO_WS_URL = "ws://localhost:8010/connection/websocket"
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "my_cache_table",
+    }
+}
+
+
